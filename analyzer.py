@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import wave_gen
 
 def getFrequencies(sample):
-	fourierTrans = numpy.abs(numpy.fft.fft(sample))
+	fourierTrans = numpy.abs(numpy.fft.fft(sample, 44100))
 	maxVal = numpy.max(fourierTrans)
 	if (maxVal != 0):
 		fourierTrans = (fourierTrans / maxVal)

@@ -1,32 +1,44 @@
 import numpy
+import pickle
 from sklearn import svm
 
-# read the training file
-print "Reading in training file..."
-raw_data = numpy.genfromtxt('largedata.csv', delimiter=",")
-numFeatures = raw_data[0].size
-numData = raw_data.size / numFeatures
+def saveSVM(clf):
+        fileObject = open('svm', 'w')
+	pickle.dump(clf, fileObject)
+	fileObject.close()
 
+def loadSVM():
+        fileObject = open('svm', 'r')
+        return pickle.load(fileObject)
 
-X = raw_data[:, 0:numFeatures - 1]
-y = raw_data[:, numFeatures - 1]
-labels = numpy.copy(y)
-features = numpy.copy(X)
-clf = svm.SVC()
-print "Fitting the data"
-clf.fit(X, y)
+def trainSVM():
+        # read the training file
+        print "Reading in training file..."
+        raw_data = numpy.genfromtxt('largedata.csv', delimiter=",")
+        numFeatures = raw_data[0].size
+        numData = raw_data.size / numFeatures
 
-predictions = clf.predict(features)
+        X = raw_data[:, 0:numFeatures - 1]
+        y = raw_data[:, numFeatures - 1]
+        labels = numpy.copy(y)
+        features = numpy.copy(X)
+        clf = svm.SVC()
+        print "Fitting the data"
+        clf.fit(X, y)
+        saveSVM(clf)
 
-errors = 0
-print "Predictions: "
-for i in range(0, numData):
-	if predictions[i] != labels[i]:
-		errors += 1
-		print "guessed: " + str(predictions[i]) + ", actual: " + str(labels[i])
+        print "Predicting on training data"
+        predictions = clf.predict(features)
+        errors = 0
+        print "Predictions: "
+        for i in range(numData):
+                if predictions[i] != labels[i]:
+                        errors += 1
+                        print "guessed: " + str(predictions[i]) + ", actual: " + str(labels[i])
+        print "error rate: " + str(errors * 1.0 / numData)
 
-print "error rate: " + str(errors * 1.0 / numData)
-
-print "Trying real audio"
-testdata = numpy.genfromtxt('testdata.csv', delimiter=",")
-print clf.predict(testdata)
+if __name__ == '__main__':
+        # trainSVM()
+        clf = loadSVM()
+        testdata = numpy.genfromtxt('testdata.csv', delimiter=",")
+        print clf.predict(testdata)
