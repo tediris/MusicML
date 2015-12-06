@@ -19,6 +19,11 @@ def createMajorChords(startNote):
 	notes = [baseNote, baseNote + 4, baseNote + 7]
 	return generateRandomChords(notes)
 
+def createMinorChords(startNote):
+	baseNote = startNote % 12
+	notes = [baseNote, baseNote + 3, baseNote + 7]
+	return generateRandomChords(notes)
+
 if __name__ == '__main__':
 	noteList = createMajorChords(44)
 	print noteList

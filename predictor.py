@@ -1,6 +1,6 @@
 import numpy
 from pybrain.tools.shortcuts import buildNetwork
-from pybrain.datasets import SupervisedDataSet
+from pybrain.datasets.classification import SupervisedDataSet
 from pybrain.supervised.trainers import BackpropTrainer
 import pickle
 
