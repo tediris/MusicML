@@ -6,22 +6,30 @@ import build_data
 import sys
 import math
 import os
+import scipy
 
 def analyzeSong(filename):
 	# generate the average fourier transform of a kick
 	kick = numpy.genfromtxt('kickdata.csv', delimiter=",")
 	avgKick = kick.mean(axis=0)
 	dataMat = readSong(filename)
+	dist = numpy.zeros(len(dataMat))
+	for i in range(0, len(dataMat)):
+		dist[i] = numpy.linalg.norm(dataMat[i] - avgKick)
+	print 'finding peaks'
+	analyzer.plotSample(dist)
 
 def readSong(filename, segTime = 0.1):
 	# read in the input song
 	rate, data = wave_reader.readWav(filename)
 	data = wave_reader.stereoToMono(data)
-
 	# sample every 0.1 seconds by default
 	segSize = segTime * rate
 	matrix = numpy.array([])
-	for i in range(0, math.floor(len(data)/segSize):
+	print 'reading in song...'
+	start = 0
+	end = segSize
+	for i in range(0, int(math.floor(len(data)/segSize))):
 		data_seg = data[start:end]
 		start += segSize
 		end += segSize
@@ -49,3 +57,5 @@ if __name__ == '__main__':
 			print "generating kick data"
 			print "--------------------"
 			createKickFft()
+		elif sys.argv[1] == 'analyze' and len(sys.argv) > 2:
+			analyzeSong(sys.argv[2])
