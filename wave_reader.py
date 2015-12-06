@@ -29,10 +29,10 @@ def extractFeatures(track, div):
         data_seg = data[start:end]
         start += segSize
         end += segSize
-        features = analyzer.getFrequencies(data_seg)
-        matrix = build_data.addToFeatureMatrix(matrix, features[0:5000])
+        features = analyzer.getFrequencies(data_seg)[0:5000]
+        matrix = build_data.addToFeatureMatrix(matrix, features)
         vmatrix = build_data.addToFeatureMatrix(vmatrix,
-                             numpy.floor(numpy.round(features[0:5000], 5)))
+                             numpy.array([numpy.argmax(features)]))
     build_data.saveFile(track + '_seg.csv', matrix)
     build_data.saveFile(track + '_volume.csv', vmatrix)
 
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     track = sys.argv[1]
     div = 10
     extractFeatures(track, div)
-    matrix = numpy.genfromtxt(track + '_seg.csv', delimiter=',')
-    wave_gen.writeWav(track + '_seg.wav', matrix, div)
-    vmatrix = numpy.genfromtxt(track + '_volume.csv', delimiter=',')
-    wave_gen.writeWav(track + '_volume.wav', vmatrix, div)
+##    matrix = numpy.genfromtxt(track + '_seg.csv', delimiter=',')
+##    wave_gen.writeWav(track + '_seg.wav', matrix, div)
+##    vmatrix = numpy.genfromtxt(track + '_volume.csv', delimiter=',')
+##    wave_gen.writeWav(track + '_volume.wav', vmatrix, div)
