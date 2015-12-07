@@ -6,11 +6,19 @@ def randBool(percent=50):
 
 def generateRandomChords(chord):
 	noteArray = []
+	baseNote = random.randint(2,6) * 12 + chord[0]
+	middleNote = random.randint(2,6) * 12 + chord[1]
 	for i in range(2, 9):
 		modifier = i * 12
 		for note in chord:
 			if randBool(30):
 				noteArray.append(note + modifier)
+	if not baseNote in noteArray:
+		noteArray.append(baseNote)
+	if not middleNote in noteArray:
+		noteArray.append(middleNote)
+
+
 	return noteArray
 
 
