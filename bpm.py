@@ -10,13 +10,19 @@ import scipy
 
 def analyzeSong(filename):
 	# generate the average fourier transform of a kick
+	snare = numpy.genfromtxt('snaredata.csv', delimiter=",")
 	kick = numpy.genfromtxt('kickdata.csv', delimiter=",")
-	meanVec, covar = analyzeSoundType(kick)
+	meanSnare, covar = analyzeSoundType(snare)
+	meanKick, covar = analyzeSoundType(kick)
 	dataMat = readSong(filename)
-	dist = numpy.zeros(len(dataMat))
-	for i in range(0, len(dataMat)):
-		dist[i] = numpy.dot(meanVec, dataMat[i])
-	analyzer.plotSample(dist)
+	matrix = numpy.array([])
+	for i in range(0, len(dataMat), 5):
+		dist = numpy.zeros(len(dataMat))
+		for j in range(0, 4):
+			dist[j] = numpy.dot(meanVec, dataMat[i + j])
+		minDistIndex = numpy.argmin(dist)
+		matrix = build_data.addToFeatureMatrix(matrix, dataMat[i + minDistIndex])
+	build_data.saveFile(filename + '.csv', matrix)
 
 def readSong(filename, segTime = 0.05):
 	# read in the input song
@@ -50,6 +56,18 @@ def createKickFft():
 		matrix = build_data.addToFeatureMatrix(matrix, features[0:2000])
 	build_data.saveFile('kickdata.csv', matrix)
 
+def createSnareFft():
+	# read in the snare drum sample
+	files = glob.glob('./snare_samples/*.wav')
+	matrix = numpy.array([])
+	for filename in files:
+		print filename
+		rate, data = wave_reader.readWav(filename)
+		data = wave_reader.stereoToMono(data)
+		features = analyzer.getFrequencies(data)
+		matrix = build_data.addToFeatureMatrix(matrix, features[0:2000])
+	build_data.saveFile('snaredata.csv', matrix)
+
 def analyzeSoundType(data = None):
 	print 'building model...'
 	if data is not None:
@@ -64,6 +82,10 @@ if __name__ == '__main__':
 			print "generating kick data"
 			print "--------------------"
 			createKickFft()
+		elif sys.argv[1] == 'snare':
+			print "generating snare data"
+			print "--------------------"
+			createSnareFft()
 		elif sys.argv[1] == 'analyze' and len(sys.argv) > 2:
 			analyzeSong(sys.argv[2])
 		elif sys.argv[1] == 'analyze' and len(sys.argv) == 2:

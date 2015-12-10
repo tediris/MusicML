@@ -8,6 +8,8 @@ import sys
 import wave_gen
 
 def stereoToMono(audiodata):
+    if len(audiodata.shape) < 2:
+        return audiodata
     d = audiodata.sum(axis=1) / 2
     return d
 
